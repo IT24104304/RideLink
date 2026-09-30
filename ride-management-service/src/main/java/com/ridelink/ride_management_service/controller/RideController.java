@@ -47,16 +47,12 @@ public class RideController {
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<?> updateRideStatus(@PathVariable String id, @RequestParam RideStatus status) {
-        try {
-            Ride updatedRide = rideService.updateRideStatus(id, status);
-            if (updatedRide == null) {
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.ok(updatedRide);
-        } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<Ride> updateRideStatus(@PathVariable String id, @RequestParam RideStatus status) {
+        Ride updatedRide = rideService.updateRideStatus(id, status);
+        if (updatedRide == null) {
+            return ResponseEntity.notFound().build();
         }
+        return ResponseEntity.ok(updatedRide);
     }
 
     @DeleteMapping("/{id}")

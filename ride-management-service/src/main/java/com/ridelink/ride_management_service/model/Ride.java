@@ -30,7 +30,7 @@ public class Ride {
     @NotBlank(message = "Dropoff location must not be blank")
     private String dropoffLocation;
 
-    private String status;
+    private RideStatus status;
 
     @NotNull(message = "Fare must not be null")
     private Double fare;

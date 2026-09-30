@@ -1,6 +1,7 @@
 package com.ridelink.ride_management_service.controller;
 
 import com.ridelink.ride_management_service.model.Ride;
+import com.ridelink.ride_management_service.model.RideStatus;
 import com.ridelink.ride_management_service.service.RideService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,19 @@ public class RideController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(updatedRide);
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<?> updateRideStatus(@PathVariable String id, @RequestParam RideStatus status) {
+        try {
+            Ride updatedRide = rideService.updateRideStatus(id, status);
+            if (updatedRide == null) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(updatedRide);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")

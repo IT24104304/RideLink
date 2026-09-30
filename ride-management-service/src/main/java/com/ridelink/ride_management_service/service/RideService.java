@@ -1,6 +1,7 @@
 package com.ridelink.ride_management_service.service;
 
 import com.ridelink.ride_management_service.model.Ride;
+import com.ridelink.ride_management_service.model.RideStatus;
 import com.ridelink.ride_management_service.repository.RideRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,9 +17,7 @@ public class RideService {
     private final RideRepository rideRepository;
 
     public Ride createRide(Ride ride) {
-        if (ride.getStatus() == null || ride.getStatus().isBlank()) {
-            ride.setStatus("REQUESTED");
-        }
+        ride.setStatus(RideStatus.REQUESTED);
         ride.setRequestedAt(LocalDateTime.now());
         return rideRepository.save(ride);
     }
@@ -39,11 +38,39 @@ public class RideService {
             existingRide.setDriverId(updatedRide.getDriverId());
             existingRide.setPickupLocation(updatedRide.getPickupLocation());
             existingRide.setDropoffLocation(updatedRide.getDropoffLocation());
-            existingRide.setStatus(updatedRide.getStatus());
             existingRide.setFare(updatedRide.getFare());
             return rideRepository.save(existingRide);
         }
         return null;
+    }
+
+    public Ride updateRideStatus(String id, RideStatus newStatus) {
+        Optional<Ride> existingRideOptional = rideRepository.findById(id);
+        if (existingRideOptional.isEmpty()) {
+            return null;
+        }
+
+        Ride existingRide = existingRideOptional.get();
+        RideStatus currentStatus = existingRide.getStatus();
+
+        if (!isValidTransition(currentStatus, newStatus)) {
+            throw new IllegalStateException("Invalid status transition from " + currentStatus + " to " + newStatus);
+        }
+
+        existingRide.setStatus(newStatus);
+        return rideRepository.save(existingRide);
+    }
+
+    private boolean isValidTransition(RideStatus currentStatus, RideStatus newStatus) {
+        if (currentStatus == null || newStatus == null) {
+            return false;
+        }
+        return switch (currentStatus) {
+            case REQUESTED -> newStatus == RideStatus.ACCEPTED || newStatus == RideStatus.CANCELLED;
+            case ACCEPTED -> newStatus == RideStatus.STARTED || newStatus == RideStatus.CANCELLED;
+            case STARTED -> newStatus == RideStatus.COMPLETED;
+            default -> false;
+        };
     }
 
     public boolean deleteRide(String id) {

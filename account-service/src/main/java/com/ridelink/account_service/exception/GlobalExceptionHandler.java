@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
             status = HttpStatus.NOT_FOUND;
         } else if ("Invalid email or password".equals(message)) {
             status = HttpStatus.UNAUTHORIZED;
-        } else if ("Account is not active".equals(message)) {
+        } else if ("Account is not active".equals(message) || "Access denied".equals(message)) {
             status = HttpStatus.FORBIDDEN;
         } else if ("Email already registered".equals(message) || "Invalid registration role".equals(message)) {
             status = HttpStatus.BAD_REQUEST;

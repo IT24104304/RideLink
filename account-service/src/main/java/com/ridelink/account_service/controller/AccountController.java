@@ -7,6 +7,8 @@ import com.ridelink.account_service.dto.RegisterRequest;
 import com.ridelink.account_service.dto.UpdateProfileRequest;
 import com.ridelink.account_service.dto.UpdateRoleRequest;
 import com.ridelink.account_service.dto.UpdateStatusRequest;
+import com.ridelink.account_service.model.Account;
+import com.ridelink.account_service.model.AccountRole;
 import com.ridelink.account_service.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -14,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -52,7 +55,11 @@ public class AccountController {
     @Operation(summary = "Get account profile by ID")
     @ApiResponse(responseCode = "200", description = "OK")
     @ApiResponse(responseCode = "404", description = "Not Found")
-    public ResponseEntity<AccountResponse> getAccountById(@PathVariable String id) {
+    public ResponseEntity<AccountResponse> getAccountById(@PathVariable String id, Authentication authentication) {
+        Account authenticatedAccount = (Account) authentication.getPrincipal();
+        if (authenticatedAccount.getRole() != AccountRole.ADMIN && !authenticatedAccount.getId().equals(id)) {
+            throw new IllegalStateException("Access denied");
+        }
         return ResponseEntity.ok(accountService.getAccountById(id));
     }
 
@@ -70,7 +77,12 @@ public class AccountController {
     @ApiResponse(responseCode = "404", description = "Not Found")
     public ResponseEntity<AccountResponse> updateProfile(
             @PathVariable String id,
-            @Valid @RequestBody UpdateProfileRequest request) {
+            @Valid @RequestBody UpdateProfileRequest request,
+            Authentication authentication) {
+        Account authenticatedAccount = (Account) authentication.getPrincipal();
+        if (authenticatedAccount.getRole() != AccountRole.ADMIN && !authenticatedAccount.getId().equals(id)) {
+            throw new IllegalStateException("Access denied");
+        }
         return ResponseEntity.ok(accountService.updateProfile(id, request));
     }
 

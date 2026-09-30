@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
             status = HttpStatus.UNAUTHORIZED;
         } else if ("Account is not active".equals(message)) {
             status = HttpStatus.FORBIDDEN;
-        } else if ("Email already registered".equals(message)) {
+        } else if ("Email already registered".equals(message) || "Invalid registration role".equals(message)) {
             status = HttpStatus.BAD_REQUEST;
         }
 

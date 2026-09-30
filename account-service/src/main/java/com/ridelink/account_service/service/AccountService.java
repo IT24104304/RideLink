@@ -9,6 +9,7 @@ import com.ridelink.account_service.dto.UpdateRoleRequest;
 import com.ridelink.account_service.dto.UpdateStatusRequest;
 import com.ridelink.account_service.mapper.AccountMapper;
 import com.ridelink.account_service.model.Account;
+import com.ridelink.account_service.model.AccountRole;
 import com.ridelink.account_service.model.AccountStatus;
 import com.ridelink.account_service.repository.AccountRepository;
 import com.ridelink.account_service.security.JwtService;
@@ -35,6 +36,10 @@ public class AccountService {
     }
 
     public AccountResponse registerAccount(RegisterRequest request) {
+        if (request.getRole() != AccountRole.PASSENGER && request.getRole() != AccountRole.DRIVER) {
+            throw new IllegalStateException("Invalid registration role");
+        }
+
         if (accountRepository.existsByEmail(request.getEmail())) {
             throw new IllegalStateException("Email already registered");
         }

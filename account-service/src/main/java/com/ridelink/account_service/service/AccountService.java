@@ -1,6 +1,8 @@
 package com.ridelink.account_service.service;
 
 import com.ridelink.account_service.dto.AccountResponse;
+import com.ridelink.account_service.dto.LoginRequest;
+import com.ridelink.account_service.dto.LoginResponse;
 import com.ridelink.account_service.dto.RegisterRequest;
 import com.ridelink.account_service.dto.UpdateProfileRequest;
 import com.ridelink.account_service.dto.UpdateRoleRequest;
@@ -9,6 +11,7 @@ import com.ridelink.account_service.mapper.AccountMapper;
 import com.ridelink.account_service.model.Account;
 import com.ridelink.account_service.model.AccountStatus;
 import com.ridelink.account_service.repository.AccountRepository;
+import com.ridelink.account_service.security.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,11 +25,13 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final AccountMapper accountMapper;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public AccountService(AccountRepository accountRepository, AccountMapper accountMapper, PasswordEncoder passwordEncoder) {
+    public AccountService(AccountRepository accountRepository, AccountMapper accountMapper, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.accountRepository = accountRepository;
         this.accountMapper = accountMapper;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     public AccountResponse registerAccount(RegisterRequest request) {
@@ -42,6 +47,29 @@ public class AccountService {
         
         Account savedAccount = accountRepository.save(account);
         return accountMapper.toResponse(savedAccount);
+    }
+
+    public LoginResponse login(LoginRequest request) {
+        Account account = accountRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new IllegalStateException("Invalid email or password"));
+
+        if (!passwordEncoder.matches(request.getPassword(), account.getPassword())) {
+            throw new IllegalStateException("Invalid email or password");
+        }
+
+        if (account.getStatus() != AccountStatus.ACTIVE) {
+            throw new IllegalStateException("Account is not active");
+        }
+
+        String token = jwtService.generateToken(account);
+        return new LoginResponse(
+                token,
+                "Bearer",
+                account.getId(),
+                account.getEmail(),
+                account.getRole(),
+                account.getStatus()
+        );
     }
 
     public AccountResponse getAccountById(String id) {

@@ -9,6 +9,7 @@ import com.ridelink.account_service.mapper.AccountMapper;
 import com.ridelink.account_service.model.Account;
 import com.ridelink.account_service.model.AccountStatus;
 import com.ridelink.account_service.repository.AccountRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,10 +21,12 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
     private final AccountMapper accountMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public AccountService(AccountRepository accountRepository, AccountMapper accountMapper) {
+    public AccountService(AccountRepository accountRepository, AccountMapper accountMapper, PasswordEncoder passwordEncoder) {
         this.accountRepository = accountRepository;
         this.accountMapper = accountMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public AccountResponse registerAccount(RegisterRequest request) {
@@ -32,6 +35,7 @@ public class AccountService {
         }
         
         Account account = accountMapper.toEntity(request);
+        account.setPassword(passwordEncoder.encode(request.getPassword()));
         account.setStatus(AccountStatus.ACTIVE);
         account.setCreatedAt(LocalDateTime.now());
         account.setUpdatedAt(LocalDateTime.now());

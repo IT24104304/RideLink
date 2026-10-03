@@ -34,9 +34,9 @@ The system consists of 4 core microservices communicating independently:
 | Student ID | Name | Role / Microservice |
 | :--- | :--- | :--- |
 | **IT24104304** | Nelundi Kulasuriya | **Driver & Vehicle Service** *(Group Leader)* |
-| **IT24104276** | Student Member | **Account Service** |
-| **IT24104353** | Student Member | **Fare & Payment Service** |
-| **IT24104143** | Student Member | **Ride Management Service** |
+| **IT24104276** | Bandara J.K.T.I. | **Account Service** |
+| **IT24104353** | Karunarathna H.W.D.S.S. | **Fare & Payment Service** |
+| **IT24104143** | Perera H.G.K.D. | **Ride Management Service** |
 
 ---
 

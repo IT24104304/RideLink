@@ -74,4 +74,10 @@ public class DriverController {
         }
         return ResponseEntity.ok(responses);
     }
+
+    @DeleteMapping("/{driverId}")
+    public ResponseEntity<Void> deleteDriver(@PathVariable String driverId) {
+        driverService.deleteDriver(driverId);
+        return ResponseEntity.noContent().build();
+    }
 }

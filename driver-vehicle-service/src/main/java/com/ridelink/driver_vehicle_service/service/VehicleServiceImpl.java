@@ -121,6 +121,14 @@ public class VehicleServiceImpl implements VehicleService {
         return mapToResponse(updatedVehicle);
     }
 
+    @Override
+    public void deleteVehicle(String id) {
+        if (!vehicleRepository.existsById(id)) {
+            throw new VehicleNotFoundException(id);
+        }
+        vehicleRepository.deleteById(id);
+    }
+
     private VehicleResponse mapToResponse(Vehicle vehicle) {
         return VehicleResponse.builder()
                 .id(vehicle.getId())

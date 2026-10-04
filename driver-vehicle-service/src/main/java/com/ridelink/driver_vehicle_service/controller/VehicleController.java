@@ -51,4 +51,10 @@ public class VehicleController {
         List<VehicleResponse> responses = vehicleService.getVehiclesByDriverId(driverId);
         return ResponseEntity.ok(responses);
     }
+
+    @DeleteMapping("/api/vehicles/{vehicleId}")
+    public ResponseEntity<Void> deleteVehicle(@PathVariable String vehicleId) {
+        vehicleService.deleteVehicle(vehicleId);
+        return ResponseEntity.noContent().build();
+    }
 }

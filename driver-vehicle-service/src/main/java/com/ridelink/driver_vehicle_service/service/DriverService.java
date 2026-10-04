@@ -21,4 +21,6 @@ public interface DriverService {
     List<DriverResponse> getAvailableDrivers();
 
     List<DriverResponse> getAvailableDriversByServiceArea(String serviceArea);
+
+    void deleteDriver(String id);
 }

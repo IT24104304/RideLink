@@ -122,6 +122,14 @@ public class DriverServiceImpl implements DriverService {
                 .toList();
     }
 
+    @Override
+    public void deleteDriver(String id) {
+        if (!driverRepository.existsById(id)) {
+            throw new DriverNotFoundException(id);
+        }
+        driverRepository.deleteById(id);
+    }
+
     private DriverResponse mapToResponse(Driver driver) {
 
         return DriverResponse.builder()
